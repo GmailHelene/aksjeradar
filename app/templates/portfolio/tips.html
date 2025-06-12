@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Stock Tips{% endblock %}
+{% block content %}
+<h2>Stock Tips</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ticker</th>
+            <th>Type</th>
+            <th>Confidence</th>
+            <th>Analysis</th>
+            <th>User</th>
+            <th>Created At</th>
+            <th>Feedback</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tip in tips %}
+        <tr>
+            <td>{{ tip.ticker }}</td>
+            <td>{{ tip.tip_type }}</td>
+            <td>{{ tip.confidence }}</td>
+            <td>{{ tip.analysis }}</td>
+            <td>{{ tip.user.username if tip.user else 'Demo' }}</td>
+            <td>{{ tip.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>{{ tip.feedback or '' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

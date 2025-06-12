@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Watchlist{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Din Watchlist</h2>
+  {% if stocks %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Navn</th>
+          <th>Siste pris</th>
+          <th>Endring %</th>
+          <th>Detaljer</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for stock in stocks %}
+        <tr>
+          <td>{{ stock.ticker }}</td>
+          <td>{{ stock.name }}</td>
+          <td>
+            {% if stock.last_price is not none %}
+              {{ stock.last_price|round(2) }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            {% if stock.change_percent is not none %}
+              <span class="{{ 'text-success' if stock.change_percent > 0 else 'text-danger' }}">
+                {{ stock.change_percent|round(2) }}%
+              </span>
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('stocks.stock_detail', ticker=stock.ticker) }}" class="btn btn-sm btn-info">Detaljer</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info">Din watchlist er tom.</div>
+  {% endif %}
+</div>
+{% endblock %}

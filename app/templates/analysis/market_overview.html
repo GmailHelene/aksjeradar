@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block title %}Market Overview{% endblock %}
+{% block content %}
+{% include 'analysis/_menu.html' %}
+<div class="container mt-4">
+  <h2>Oslo Børs Market Overview</h2>
+  <h3>Oslo Børs</h3>
+  {% include 'analysis/_menu.html' %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Navn</th>
+        <th>Pris</th>
+        <th>Endring %</th>
+        <th>Signal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticker, stock in oslo_stocks.items() %}
+      <tr>
+        <td>{{ ticker }}</td>
+        <td>{{ stock.name }}</td>
+        <td>
+          {% if stock.last_price is defined and stock.last_price is not none %}
+            {{ stock.last_price|round(2) }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>
+          {% if stock.change_percent is defined and stock.change_percent is not none %}
+            {{ stock.change_percent|round(2) }}%
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>{{ stock.signal or 'N/A' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Globale aksjer</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Navn</th>
+        <th>Pris</th>
+        <th>Endring %</th>
+        <th>Signal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticker, data in global_stocks.items() %}
+      <tr>
+        <td>{{ ticker }}</td>
+        <td>{{ data.name }}</td>
+        <td>
+          {% if data.last_price is defined and data.last_price is not none %}
+            {{ data.last_price|round(2) }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>
+          {% if data.change_percent is defined and data.change_percent is not none %}
+            {{ data.change_percent|round(2) }}%
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>{{ data.signal or 'N/A' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Krypto</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Navn</th>
+        <th>Pris</th>
+        <th>Endring %</th>
+        <th>Signal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticker, data in crypto.items() %}
+      <tr>
+        <td>{{ ticker }}</td>
+        <td>{{ data.name }}</td>
+        <td>
+          {% if data.last_price is defined and data.last_price is not none %}
+            {{ data.last_price|round(2) }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>
+          {% if data.change_percent is defined and data.change_percent is not none %}
+            {{ data.change_percent|round(2) }}%
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>{{ data.signal or 'N/A' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Valuta</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Navn</th>
+        <th>Pris</th>
+        <th>Endring %</th>
+        <th>Signal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticker, data in currency.items() %}
+      <tr>
+        <td>{{ ticker }}</td>
+        <td>{{ data.name }}</td>
+        <td>
+          {% if data.last_price is defined and data.last_price is not none %}
+            {{ data.last_price|round(4) }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>
+          {% if data.change_percent is defined and data.change_percent is not none %}
+            {{ data.change_percent|round(2) }}%
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>{{ data.signal or 'N/A' }}</td>
+      </tr> 
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

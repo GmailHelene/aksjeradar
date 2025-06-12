@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Teknisk Analyse{% endblock %}
+{% block content %}
+{% include 'analysis/_menu.html' %}
+<div class="container mt-4">
+  <h2>Teknisk Analyse (Aksjer, Krypto, Valuta)</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Signal</th>
+        <th>RSI</th>
+        <th>MACD</th>
+        <th>Støtte/Motstand</th>
+        <th>Volum</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticker, analysis in analyses.items() %}
+      <tr>
+        <td>{{ ticker }}</td>
+        <td>{{ analysis.signal or 'N/A' }}</td>
+        <td>
+          {% if analysis.rsi is defined and analysis.rsi is not none %}
+            {{ analysis.rsi|round(2) }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>
+          {% if analysis.macd is defined and analysis.macd is not none %}
+            {{ analysis.macd|round(2) }}
+          {% else %}
+            N/A
+          {% endif %} 
+        </td>
+        <td>
+          {% if analysis.support is defined and analysis.resistance is defined %}
+            {{ analysis.support|round(2) }} / {{ analysis.resistance|round(2) }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>
+          {% if analysis.volume is defined and analysis.volume is not none %}
+            {{ analysis.volume|round(0) }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

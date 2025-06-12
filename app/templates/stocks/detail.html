@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ ticker }} - Stock Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('stocks.index') }}">Stocks</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ ticker }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>{{ stock_info.get('longName', ticker) }}</h3>
+                <h5>{{ ticker }} - {{ stock_info.get('exchange', '') }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h2 class="mb-0">
+                          {% if technical_analysis.last_price is not none %}
+                            {{ technical_analysis.last_price|round(2) }}
+                          {% else %}
+                            N/A
+                          {% endif %}
+                        </h2>
+                        <div class="{% if technical_analysis.get('change') is not none %}{{ 'text-success' if technical_analysis.get('change') > 0 else 'text-danger' }}{% endif %}">
+                          {% if technical_analysis.get('change') is not none %}
+                            {{ technical_analysis.get('change')|round(2) }}
+                          {% else %}
+                            N/A
+                          {% endif %}
+                          (
+                          {% if technical_analysis.get('change_percent') is not none %}
+                            {{ technical_analysis.get('change_percent')|round(2) }}%
+                          {% else %}
+                            N/A
+                          {% endif %}
+                          )
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <a href="{{ url_for('stocks.stock_analysis', ticker=ticker) }}" class="btn btn-primary">Analyze</a>
+                        <a href="{{ url_for('stocks.stock_ai_analysis', ticker=ticker) }}" class="btn btn-success">AI Analysis</a>
+                    </div>
+                </div>
+                
+                <div class="stock-chart-container">
+                    <canvas id="stockChart"></canvas>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Company Info</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Sector:</strong> {{ stock_info.get('sector', 'N/A') }}</p>
+                                <p><strong>Industry:</strong> {{ stock_info.get('industry', 'N/A') }}</p>
+                                <p><strong>Market Cap:</strong> {{ (stock_info.get('marketCap', 0) / 1000000000)|round(2) }} B</p>
+                                <p><strong>Volume:</strong> {{ stock_info.get('volume', 'N/A') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Key Metrics</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>P/E Ratio:</strong> {{ stock_info.get('trailingPE', 'N/A') }}</p>
+                                <p><strong>EPS:</strong> {{ stock_info.get('trailingEps', 'N/A') }}</p>
+                                <p><strong>Dividend Yield:</strong> {{ (stock_info.get('dividendYield', 0) * 100)|round(2) }}%</p>
+                                <p><strong>52-Week Range:</strong> {{ stock_info.get('fiftyTwoWeekLow', 'N/A') }} - {{ stock_info.get('fiftyTwoWeekHigh', 'N/A') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Technical Indicators</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>RSI:</strong> {{ technical_analysis.get('rsi', 'N/A')|round(2) }}
+                                    <span class="badge {{ 'bg-danger' if technical_analysis.get('rsi', 50) > 70 else 'bg-success' if technical_analysis.get('rsi', 50) < 30 else 'bg-secondary' }}">
+                                        {{ technical_analysis.get('rsi_signal', 'NEUTRAL') }}
+                                    </span>
+                                </p>
+                                <p><strong>MA 20/50:</strong>
+                                    <span class="badge {{ 'bg-success' if technical_analysis.get('ma_20_50_signal') == 'BUY' else 'bg-danger' }}">
+                                        {{ technical_analysis.get('ma_20_50_signal', 'NEUTRAL') }}
+                                    </span>
+                                </p>
+                                <p><strong>MA 50/200:</strong>
+                                    <span class="badge {{ 'bg-success' if technical_analysis.get('ma_50_200_signal') == 'BUY' else 'bg-danger' }}">
+                                        {{ technical_analysis.get('ma_50_200_signal', 'NEUTRAL') }}
+                                    </span>
+                                </p>
+                                <p><strong>Overall Signal:</strong>
+                                    <span class="badge {{ 'bg-success' if technical_analysis.get('overall_signal') == 'BUY' else 'bg-danger' if technical_analysis.get('overall_signal') == 'SELL' else 'bg-secondary' }}">
+                                        {{ technical_analysis.get('overall_signal', 'NEUTRAL') }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-outline-primary" id="add-to-watchlist" data-ticker="{{ ticker }}" aria-label="Add {{ ticker }} to Watchlist">
+                            <i class="bi bi-eye"></i> Add to Watchlist
+                        </button>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn btn-outline-success" id="add-to-portfolio" data-ticker="{{ ticker }}" aria-label="Add {{ ticker }} to Portfolio">
+                            <i class="bi bi-briefcase"></i> Add to Portfolio
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Company Description</h5>
+            </div>
+            <div class="card-body">
+                <p>{{ stock_info.get('longBusinessSummary', 'No description available.') }}</p>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>News</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% if stock_info.get('news') %}
+                        {% for news_item in stock_info.get('news', [])[:5] %}
+                            <a href="{{ news_item.get('link', '#') }}" class="list-group-item list-group-item-action" target="_blank">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ news_item.get('title', 'No title') }}</h6>
+                                <small>{{ news_item.get('providerPublishTime', '')|safe }}                                </div>
+                                <p class="mb-1">{{ news_item.get('publisher', 'Unknown source') }}</p>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="list-group-item">No recent news available.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5>Related Stocks</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% if stock_info.get('recommendedSymbols') %}
+                        {% for symbol in stock_info.get('recommendedSymbols', [])[:5] %}
+                            <a href="{{ url_for('stocks.stock_detail', ticker=symbol) }}" class="list-group-item list-group-item-action">
+                                {{ symbol }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="list-group-item">No related stocks available.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="application/json" id="stock-data">
+    {{ stock_data|tojson }}
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chart data
+        const chartElem = document.getElementById('stockChart');
+        const stockDataElem = document.getElementById('stock-data');
+        let stockData = [];
+        if (stockDataElem && stockDataElem.textContent.trim()) {
+            try {
+                stockData = JSON.parse(stockDataElem.textContent);
+            } catch (e) {
+                stockData = [];
+            }
+        }
+        if (chartElem && stockData.length > 0) {
+            const ctx = chartElem.getContext('2d');
+            const dates = stockData.map(item => item.Date);
+            const prices = stockData.map(item => item.Close);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: '{{ ticker }} Price',
+                        data: prices,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { display: true, title: { display: true, text: 'Date' } },
+                        y: { display: true, title: { display: true, text: 'Price' } }
+                    }
+                }
+            });
+        }
+
+        // Add to watchlist button
+        const watchBtn = document.getElementById('add-to-watchlist');
+        if (watchBtn) {
+            watchBtn.addEventListener('click', function() {
+                const ticker = this.getAttribute('data-ticker');
+                alert(`Adding ${ticker} to watchlist (demo functionality)`);
+            });
+        }
+
+        // Add to portfolio button
+        const portfolioBtn = document.getElementById('add-to-portfolio');
+        if (portfolioBtn) {
+            portfolioBtn.addEventListener('click', function() {
+                const ticker = this.getAttribute('data-ticker');
+                alert(`Adding ${ticker} to portfolio (demo functionality)`);
+            });
+        }
+    });
+</script>
+{% endblock %}

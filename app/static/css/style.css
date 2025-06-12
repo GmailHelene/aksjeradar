@@ -1,0 +1,92 @@
+/* General styles */
+body {
+    background: #f8f9fa;
+    color: #212529;
+}
+
+.bg-primary {
+    background-color: #0d6efd !important;
+}
+
+.bg-success {
+    background-color: #198754 !important;
+}
+
+.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.text-success {
+    color: #198754 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+/* Cards */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    border-top-left-radius: 0.5rem !important;
+    border-top-right-radius: 0.5rem !important;
+}
+
+/* Stock chart */
+.stock-chart-container {
+    height: 400px;
+}
+
+/* Tables */
+.table-responsive {
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+/* Nav */
+.navbar {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.navbar-dark.bg-dark {
+    background-color: #111 !important;
+    border-bottom: 2px solid #222;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Footer */
+footer {
+    margin-top: 3rem;
+}
+
+footer.bg-dark {
+    background: #111 !important;
+}
+
+/* Jumbotron */
+.jumbotron {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Charts */
+canvas {
+    max-width: 100%;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    .stock-chart-container {
+        height: 300px;
+    }
+}

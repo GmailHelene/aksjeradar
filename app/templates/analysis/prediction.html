@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Price Prediction (Top Oslo Børs Stocks){% endblock %}
+{% block content %}
+{% include 'analysis/_menu.html' %}
+<h2>Price Prediction (Top Oslo Børs Stocks)</h2>
+<p>Her ser du avanserte pris-prediksjoner og nøkkeltall for utvalgte aksjer på Oslo Børs.</p>
+<h3>Oslo Børs</h3>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Ticker</th>
+      <th>Predikert pris</th>
+      <th>Endring %</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ticker, data in predictions_oslo.items() %}
+    <tr>
+      <td>{{ ticker }}</td>
+      <td>
+        {% if data.predicted_price is defined and data.predicted_price is not none %}
+          {{ data.predicted_price|round(2) }}
+        {% else %}
+          N/A
+        {% endif %}
+      </td>
+      <td>
+        {% if data.change_percent is defined and data.change_percent is not none %}
+          {{ data.change_percent|round(2) }}%
+        {% else %}
+          N/A
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Globale aksjer</h3>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Ticker</th>
+      <th>Predikert pris</th>
+      <th>Endring %</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ticker, data in predictions_global.items() %}
+    <tr>
+      <td>{{ ticker }}</td>
+      <td>
+        {% if data.predicted_price is defined and data.predicted_price is not none %}
+          {{ data.predicted_price|round(2) }}
+        {% else %}
+          N/A
+        {% endif %}
+      </td>
+      <td>
+        {% if data.change_percent is defined and data.change_percent is not none %}
+          {{ data.change_percent|round(2) }}%
+        {% else %}
+          N/A
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

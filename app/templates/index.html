@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Oslo Børs Stock Analyzer{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <!-- Login/registrer-knapper hvis ikke innlogget -->
+  {% if not current_user.is_authenticated %}
+    <div class="mb-3">
+      <a href="{{ url_for('main.login') }}" class="btn btn-primary me-2">Logg inn</a>
+      <a href="{{ url_for('main.register') }}" class="btn btn-outline-primary">Registrer</a>
+    </div>
+  {% endif %}
+
+  <!-- Oslo Børs aksjer -->
+  <div class="mb-4">
+    <h3>Oslo Børs</h3>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Navn</th>
+          <th>Pris</th>
+          <th>Endring %</th>
+          <th>Signal</th>
+          <th>Kjøp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticker, data in oslo_stocks.items() %}
+        <tr>
+          <td>{{ ticker }}</td>
+          <td>{{ data.name }}</td>
+          <td>
+            {% if data.last_price is defined and data.last_price is not none %}
+              {{ data.last_price|round(2) }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            {% if data.change_percent is defined and data.change_percent is not none %}
+              {{ data.change_percent|round(2) }}%
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>{{ data.signal or 'N/A' }}</td>
+          <td>
+            <a href="https://www.nordnet.no/market/stocks/{{ ticker|replace('.OL','') }}" target="_blank" class="btn btn-sm btn-success">Kjøp hos Nordnet</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Globale aksjer -->
+  <div class="mb-4">
+    <h3>Globale aksjer</h3>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Navn</th>
+          <th>Pris</th>
+          <th>Endring %</th>
+          <th>Signal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticker, data in global_stocks.items() %}
+        <tr>
+          <td>{{ ticker }}</td>
+          <td>{{ data.name }}</td>
+          <td>
+            {% if data.last_price is defined and data.last_price is not none %}
+              {{ data.last_price|round(2) }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            {% if data.change_percent is defined and data.change_percent is not none %}
+              {{ data.change_percent|round(2) }}%
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>{{ data.signal or 'N/A' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Kryptovaluta -->
+  <div class="mb-4">
+    <h2>Kryptovaluta</h2>
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Navn</th>
+          <th>Kode</th>
+          <th>Pris (USD)</th>
+          <th>Endring 24t</th>
+          <th>Kjøp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for symbol, data in crypto.items() %}
+        <tr>
+          <td>{{ data.name }}</td>
+          <td>{{ symbol }}</td>
+          <td>
+            {% if data.last_price is defined and data.last_price is not none %}
+              {{ data.last_price|round(2) }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            {% if data.change_percent is defined and data.change_percent is not none %}
+              {{ data.change_percent|round(2) }}%
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            <a href="https://www.coinbase.com/price/{{ data.name|lower|replace(' ', '-') }}" target="_blank" class="btn btn-sm btn-success">Kjøp hos Coinbase</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Valuta -->
+  <div class="mb-4">
+    <h2>Valuta</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Navn</th>
+          <th>Siste pris</th>
+          <th>Endring %</th>
+          <th>Signal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticker, data in currency.items() %}
+        <tr>
+          <td>{{ ticker }}</td>
+          <td>{{ data.name }}</td>
+          <td>
+            {% if data.last_price is defined and data.last_price is not none %}
+              {{ data.last_price|round(4) }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            {% if data.change_percent is defined and data.change_percent is not none %}
+              {{ data.change_percent|round(2) }}%
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>{{ data.signal or 'N/A' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Markedsoversikt -->
+  <div class="mb-4">
+    <h2>Markedsoversikt</h2>
+    {% if market_overview %}
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Navn</th>
+            <th>Siste pris</th>
+            <th>Endring %</th>
+            <th>Signal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticker, data in market_overview.items() %}
+          <tr>
+            <td>{{ ticker }}</td>
+            <td>{{ data.name }}</td>
+            <td>
+              {% if data.last_price is defined and data.last_price is not none %}
+                {{ data.last_price|round(2) }}
+              {% else %}
+                N/A
+              {% endif %}
+            </td>
+            <td>
+              {% if data.change_percent is defined and data.change_percent is not none %}
+                {{ data.change_percent|round(2) }}%
+              {% else %}
+                N/A
+              {% endif %}
+            </td>
+            <td>{{ data.signal or 'N/A' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert alert-info">Ingen markedsdata tilgjengelig.</div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

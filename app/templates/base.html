@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Oslo Børs Stock Analyzer{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <!-- Sort header/nav -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{{ url_for('main.index') }}">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" width="32" height="32" class="d-inline-block align-text-top me-2">
+        Aksjeradar
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Forside</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('portfolio.index') }}">Portefølje</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('stocks.index') }}">Aksjeoversikt</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="analyseDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Analyse
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="analyseDropdown">
+              <li><a class="dropdown-item" href="{{ url_for('analysis.index') }}">Dashboard</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('analysis.prediction') }}">Kursprognose</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('analysis.technical') }}">Teknisk analyse</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('analysis.recommendation') }}?ticker=EQNR">Anbefaling</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('analysis.ai') }}">AI-analyse</a></li>
+          </ul>
+      </li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <span class="navbar-text me-2">Hei, {{ current_user.username }}</span>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('main.logout') }}">Logg ut</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('main.login') }}">Logg inn</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('main.register') }}">Registrer</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  {% block content %}{% endblock %} 
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Oslo Børs Stock Analyzer</h5>
+                <p>A comprehensive stock analysis tool focusing on Oslo Børs</p>
+            </div>
+            <div class="col-md-3">
+                <h5>Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{{ url_for('main.index') }}" class="text-white">Home</a></li>
+                    <li><a href="{{ url_for('stocks.index') }}" class="text-white">Stocks</a></li>
+                    <li><a href="{{ url_for('analysis.index') }}" class="text-white">Analysis</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Resources</h5>
+                <ul class="list-unstyled">
+                    <li><a href="https://www.euronext.com/en/markets/oslo" class="text-white" target="_blank">Oslo Børs</a></li>
+                    <li><a href="https://finance.yahoo.com/" class="text-white" target="_blank">Yahoo Finance</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+        <p class="text-center mb-0">&copy; 2023 Oslo Børs Stock Analyzer. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- JS og spinner ... -->
+</body>
+</html>

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Anbefaling{% endblock %}
+{% block content %}
+{% include 'analysis/_menu.html' %}
+<div class="container mt-4">
+  <h2>Anbefaling for {{ ticker }}</h2>
+  {% if recommendation %}
+    <p>
+      <strong>Signal:</strong> {{ recommendation.recommendation or 'N/A' }}<br>
+      <strong>Confidence:</strong> {{ recommendation.confidence or 'N/A' }}<br>
+      <strong>Trend:</strong>
+      {% if recommendation.prediction is defined and (recommendation.prediction.trend is defined or recommendation.prediction.get('trend')) %}
+        {{ recommendation.prediction.trend if recommendation.prediction.trend is defined else recommendation.prediction.get('trend', 'N/A') }}
+      {% else %}
+        N/A
+      {% endif %}
+      <br>
+      <strong>Endring (%):</strong>
+      {% if recommendation.prediction is defined and recommendation.prediction.change_percent is defined and recommendation.prediction.change_percent is not none %}
+        {{ recommendation.prediction.change_percent|round(2) }}%
+      {% else %}
+        N/A
+      {% endif %}
+    </p>
+    <img src="data:image/png;base64,{{ recommendation.technical_analysis.chart_img }}" class="img-fluid" alt="Technical Chart">
+  {% else %}
+    <div class="alert alert-info">Ingen anbefaling tilgjengelig.</div>
+  {% endif %}
+</div>
+{% endblock %}

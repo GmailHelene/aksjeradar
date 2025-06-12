@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>AI-analyse</h2>
+  <form method="post" class="mb-3">
+    <input type="text" class="form-control" name="ticker" placeholder="Søk etter ticker, f.eks. EQNR, AAPL, TSLA" value="{{ ticker }}">
+    <small class="form-text text-muted">
+      Søk etter aksjesymbol (ticker), f.eks. EQNR, AAPL, TSLA, MSFT, BTC, ETH
+    </small>
+    <button type="submit" class="btn btn-primary mt-2">Analyser</button>
+  </form>
+
+  {% if ai_analysis %}
+    <div class="card mt-4">
+      <div class="card-body">
+        <h4>Analyse for {{ ticker|upper }}</h4>
+        <p><strong>Signal:</strong> {{ ai_analysis.signal }}</p>
+        <p><strong>Confidence:</strong> {{ ai_analysis.confidence }}</p>
+        <p><strong>Sentiment:</strong> {{ ai_analysis.sentiment }}</p>
+        <p><strong>Kommentar:</strong> {{ ai_analysis.comment }}</p>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if ai_analyses %}
+    <h4 class="mt-5">AI-analyse for utvalgte aksjer:</h4>
+    <ul>
+      {% for ticker, analysis in ai_analyses.items() %}
+        <li><strong>{{ ticker }}</strong>: {{ analysis.summary|replace('\n', '<br>')|safe }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+{% endblock %}
